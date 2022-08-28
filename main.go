@@ -14,6 +14,7 @@ import (
 var users = []User{}
 
 var dbName string
+var usrCol = "user"
 
 var mongoClient *mongo.Client
 
@@ -29,11 +30,13 @@ func main() {
 
 	router := gin.Default()
 	router.Use(validateAPIKey())
-	router.GET("/users", getUsers)
+
+	router.GET("/user", getUsers)
 	router.GET("/user/:id", getUser)
 	router.POST("/user", addUser)
-	router.PUT("/user/:id", updateUser)
+	router.PUT("/user", updateUser)
 	router.DELETE("/user/:id", deleteUser)
+
 	router.Run("localhost:8080")
 }
 
@@ -59,7 +62,7 @@ func getUser(c *gin.Context) {
 	}
 	option = bson.D{}
 
-	cursor, err := query(mongoClient, c, dbName, "user", filter, option)
+	cursor, err := query(mongoClient, c, dbName, usrCol, filter, option)
 	if err != nil {
 		c.AbortWithStatusJSON(500, err)
 	}
@@ -69,7 +72,11 @@ func getUser(c *gin.Context) {
 		c.AbortWithStatusJSON(500, err)
 	}
 
-	c.IndentedJSON(http.StatusOK, results)
+	if len(results) <= 0 {
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
+	c.IndentedJSON(http.StatusOK, results[len(results)-1])
 }
 
 func getUsers(c *gin.Context) {
@@ -78,7 +85,7 @@ func getUsers(c *gin.Context) {
 	filter = bson.D{}
 	option = bson.D{}
 
-	cursor, err := query(mongoClient, c, dbName, "user", filter, option)
+	cursor, err := query(mongoClient, c, dbName, usrCol, filter, option)
 	if err != nil {
 		c.AbortWithStatusJSON(500, err)
 	}
@@ -100,7 +107,7 @@ func addUser(c *gin.Context) {
 	newUser.Password = string(hashedPass)
 	newUser.Id = primitive.NewObjectID()
 
-	_, err := insertOne(mongoClient, c, dbName, "user", newUser)
+	_, err := insertOne(mongoClient, c, dbName, usrCol, newUser)
 	if err != nil {
 		c.AbortWithStatusJSON(500, err)
 	}
@@ -119,8 +126,7 @@ func updateUser(c *gin.Context) {
 	}
 	option = bson.D{}
 
-	var cursor *mongo.Cursor
-	cursor, err = query(mongoClient, c, dbName, "user", filter, option)
+	cursor, err := query(mongoClient, c, dbName, usrCol, filter, option)
 	if err := c.BindJSON(&user); err != nil {
 		return
 	}
@@ -153,7 +159,7 @@ func deleteUser(c *gin.Context) {
 	}
 
 	var result *mongo.DeleteResult
-	result, err = deleteOne(mongoClient, c, dbName, "user", filter)
+	result, err = deleteOne(mongoClient, c, dbName, usrCol, filter)
 	if err != nil {
 		c.AbortWithStatusJSON(500, err)
 	}
