@@ -51,9 +51,9 @@ func insertMany(client *mongo.Client, ctx context.Context, dataBase, col string,
 	return result, err
 }
 
-func UpdateOne(client *mongo.Client, ctx context.Context, dataBase, col string, filter, update interface{}) (result *mongo.UpdateResult, err error) {
+func ReplaceOne(client *mongo.Client, ctx context.Context, dataBase, col string, filter, update interface{}) (result *mongo.UpdateResult, err error) {
 	collection := client.Database(dataBase).Collection(col)
-	result, err = collection.UpdateOne(ctx, filter, update)
+	result, err = collection.ReplaceOne(ctx, filter, update)
 	return
 }
 
