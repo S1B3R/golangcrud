@@ -10,7 +10,6 @@ import (
 var users = []User{}
 
 var dbName string
-var usrCol = "user"
 
 var mongoClient *mongo.Client
 

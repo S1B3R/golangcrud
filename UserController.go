@@ -65,10 +65,12 @@ func addUser(c *gin.Context) {
 	newUser.Password = string(hashedPass)
 	newUser.Id = primitive.NewObjectID()
 
-	_, err := insertOne(mongoClient, c, dbName, usrCol, newUser)
+	result, err := insertOne(mongoClient, c, dbName, usrCol, newUser)
 	if err != nil {
 		c.AbortWithStatusJSON(500, err)
 	}
+
+	c.IndentedJSON(http.StatusOK, result)
 }
 
 func updateUser(c *gin.Context) {
