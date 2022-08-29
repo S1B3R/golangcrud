@@ -3,7 +3,7 @@
 This repo objective is to implement a CRUD of users REST API.<br/>
 MongoDb was chosen for storing data due to its simplicity and agility to store and retrieve data. Connection string and database name are retrieved as environment variables.<br/>
 X-API-Key is being used to secure the API and is being passed as an environment variable.<br/>
-Launch.json is included in .vscode folder to help set the environment to your liking.<br/>
+Launch.json and Postman backup files are included in .vscode folder to help set the environment to your liking.<br/>
 
 ===============================
 # Improvements to be made:
